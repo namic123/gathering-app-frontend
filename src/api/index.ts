@@ -1,4 +1,5 @@
 import axios from 'axios'
+// 기존 코드에서 이 줄만 수정:
 import type {
     CreateGatheringRequest,
     CreateGatheringResponse,
@@ -6,8 +7,10 @@ import type {
     ParticipateRequest,
     ParticipateResponse,
     ConfirmRequest,
-    ConfirmedResultResponse
+    ConfirmedResultResponse,
+    VoteSummaryResponse         // ← 추가
 } from '@/types'
+
 
 /**
  * Axios 인스턴스.
@@ -56,10 +59,10 @@ export function updateVote(shareCode: string, data: ParticipateRequest, sessionT
     })
 }
 
+// 기존 getVoteSummary를 아래로 교체:
 export function getVoteSummary(shareCode: string) {
-    return api.get(`/gatherings/${shareCode}/votes/summary`)
+    return api.get<VoteSummaryResponse>(`/gatherings/${shareCode}/votes/summary`)
 }
-
 // ========== 확정 API ==========
 
 export function confirmGathering(shareCode: string, data: ConfirmRequest, adminToken: string) {
@@ -77,5 +80,7 @@ export function resolveTiebreak(shareCode: string, data: ConfirmRequest, adminTo
 export function getResult(shareCode: string) {
     return api.get<ConfirmedResultResponse>(`/gatherings/${shareCode}/result`)
 }
+
+
 
 export default api

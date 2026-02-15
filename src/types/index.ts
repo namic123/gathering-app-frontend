@@ -100,3 +100,27 @@ export interface ConfirmedResultResponse {
     confirmedAt: string
     icsDownloadUrl: string
 }
+
+// ========== 투표 현황 (D6 추가) ==========
+
+/**
+ * 후보 1건의 투표 집계 결과.
+ * candidateId: TimeCandidate 또는 PlaceCandidate의 DB id.
+ * voterNames: 이 후보에 투표한 참여자 닉네임 목록.
+ */
+export interface CandidateVote {
+    candidateId: number
+    voteCount: number
+    voterNames: string[]
+}
+
+/**
+ * GET /api/v1/gatherings/{shareCode}/votes 응답.
+ * 5초 폴링으로 실시간 투표 현황 갱신에 사용.
+ */
+export interface VoteSummaryResponse {
+    participantCount: number
+    participantNames: string[]
+    timeCandidateVotes: CandidateVote[]
+    placeCandidateVotes: CandidateVote[]
+}
