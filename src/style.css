@@ -1,3 +1,36 @@
-/* TailwindCSS 유틸리티 클래스 import */
-/* 이 한 줄로 모든 Tailwind 클래스 사용 가능 (예: class="p-4 text-lg bg-white") */
 @import "tailwindcss";
+
+/* ===========================
+   커스텀 테마 (Tailwind v4 방식)
+   =========================== */
+@theme {
+    --font-family-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* 브랜드 색상 */
+    --color-primary-50: #F0EEFF;
+    --color-primary-100: #DDD9FE;
+    --color-primary-200: #BDB4FD;
+    --color-primary-300: #A29BFE;
+    --color-primary-400: #8577F0;
+    --color-primary-500: #6C5CE7;
+    --color-primary-600: #5A4BD1;
+    --color-primary-700: #4A3CB0;
+    --color-primary-800: #3B2F8E;
+    --color-primary-900: #2D2370;
+
+    /* 시맨틱 */
+    --color-success: #00B894;
+    --color-warning: #FDCB6E;
+    --color-danger: #E17055;
+}
+
+/* ===========================
+   글로벌 리셋 보완
+   =========================== */
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+}
