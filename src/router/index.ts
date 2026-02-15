@@ -1,46 +1,76 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+/**
+ * 라우트 정의.
+ *
+ * 핵심 흐름:
+ * 홈(/) → 생성(/create) → 완료(/created/:shareCode)
+ *                        → 투표(/g/:shareCode)
+ *                        → 대시보드(/g/:shareCode/dashboard)
+ *                        → 투표현황(/g/:shareCode/votes)
+ *                        → 결과(/g/:shareCode/result)
+ *                        → 동점해소(/g/:shareCode/tiebreak)
+ */
 const routes = [
-    // === 주최자 플로우 ===
     {
         path: '/',
-        component: () => import('../views/HomePage.vue'),         // 랜딩 페이지 (모임 생성 시작)
+        name: 'Home',
+        component: () => import('@/views/HomePage.vue')
     },
     {
         path: '/create',
-        component: () => import('../views/CreatePage.vue'),       // 모임 생성 위자드 (제목→후보→완료)
+        name: 'Create',
+        component: () => import('@/views/CreatePage.vue')
     },
-
-    // === 참여자 플로우 ===
-    // :shareCode → 동적 파라미터 (예: /g/aB3kX7)
-    // 카카오톡 공유 링크로 들어오는 진입점
+    {
+        path: '/created/:shareCode',
+        name: 'CreateComplete',
+        component: () => import('@/views/CreateCompletePage.vue'),
+        props: true
+    },
     {
         path: '/g/:shareCode',
-        component: () => import('../views/ParticipatePage.vue'),  // 닉네임 입력 + 투표
+        name: 'Participate',
+        component: () => import('@/views/ParticipatePage.vue'),
+        props: true
     },
-
-    // === 공통/관리 화면 ===
     {
         path: '/g/:shareCode/dashboard',
-        component: () => import('../views/DashboardPage.vue'),    // 주최자 대시보드 (링크 공유, 투표 현황)
+        name: 'Dashboard',
+        component: () => import('@/views/DashboardPage.vue'),
+        props: true
     },
     {
         path: '/g/:shareCode/votes',
-        component: () => import('../views/VotesPage.vue'),        // 투표 현황 (누구나 열람 가능)
+        name: 'Votes',
+        component: () => import('@/views/VotesPage.vue'),
+        props: true
     },
     {
         path: '/g/:shareCode/result',
-        component: () => import('../views/ResultPage.vue'),       // 확정 결과 카드 + .ics 다운로드
+        name: 'Result',
+        component: () => import('@/views/ResultPage.vue'),
+        props: true
     },
     {
         path: '/g/:shareCode/tiebreak',
-        component: () => import('../views/TiebreakPage.vue'),     // 동점 해소 (주최자 전용)
+        name: 'Tiebreak',
+        component: () => import('@/views/TiebreakPage.vue'),
+        props: true
     },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('@/views/NotFoundPage.vue')
+    }
 ]
 
-export default createRouter({
-    // HTML5 History 모드: URL에 # 없이 깔끔한 경로 사용
-    // (배포 시 서버에서 SPA fallback 설정 필요 — Vercel은 자동 처리)
+const router = createRouter({
     history: createWebHistory(),
     routes,
+    scrollBehavior() {
+        return { top: 0 }
+    }
 })
+
+export default router
