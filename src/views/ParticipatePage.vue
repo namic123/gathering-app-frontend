@@ -187,15 +187,17 @@
                 <!-- 메모가 있으면 서브텍스트로 표시 -->
                 <p v-if="pc.memo" class="text-xs text-gray-500">{{ pc.memo }}</p>
                 <!-- 지도 링크가 있으면 외부 링크 -->
-
-                v-if="pc.mapLink"
-                :href="pc.mapLink"
-                target="_blank"
-                class="text-xs text-primary-500 hover:underline"
-                @click.stop
+                <a
+                    v-if="pc.mapLink"
+                    :href="pc.mapLink"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-xs text-primary-500 hover:underline"
+                    @click.stop
                 >
-                지도 보기 ↗
+                  지도 보기 ↗
                 </a>
+
               </div>
 
               <span
@@ -239,7 +241,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import { getGathering, participate, updateVote } from '@/api'
@@ -253,7 +254,6 @@ dayjs.locale('ko')
 // ========== Props & Route ==========
 
 const props = defineProps<{ shareCode: string }>()
-const route = useRoute();
 
 // ========== Composables ==========
 
