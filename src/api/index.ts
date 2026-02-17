@@ -61,7 +61,7 @@ export function updateVote(shareCode: string, data: ParticipateRequest, sessionT
 
 // 기존 getVoteSummary를 아래로 교체:
 export function getVoteSummary(shareCode: string) {
-    return api.get<VoteSummaryResponse>(`/gatherings/${shareCode}/votes/summary`)
+    return api.get<VoteSummaryResponse>(`/gatherings/${shareCode}/votes`)
 }
 // ========== 확정 API ==========
 
