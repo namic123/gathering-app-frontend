@@ -164,12 +164,48 @@
                      focus:outline-none focus:border-primary-500"
                    placeholder="카카오맵/네이버지도 URL" maxlength="500" />
           </div>
-          <div class="mb-1">
+          <div class="mb-2">
             <label class="block text-xs font-semibold text-gray-500 mb-1">메모 (선택)</label>
             <input v-model="pc.memo"
                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm
                      focus:outline-none focus:border-primary-500"
                    placeholder="예: 삼겹살 맛집, 주차 가능" maxlength="200" />
+          </div>
+
+          <!-- 세부 옵션 토글 -->
+          <button
+              type="button"
+              class="text-xs text-primary-500 font-semibold mb-2"
+              @click="pc.showDetail = !pc.showDetail"
+          >
+            {{ pc.showDetail ? '▲ 세부 옵션 접기' : '▼ 세부 옵션 추가' }}
+          </button>
+
+          <!-- 세부 옵션 (예상 비용, 이동시간, 분위기 태그) -->
+          <div v-if="pc.showDetail" class="space-y-2 pt-2 border-t border-gray-100">
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <label class="block text-xs font-semibold text-gray-500 mb-1">예상 비용 (원)</label>
+                <input v-model="pc.estCost" type="number" min="0"
+                       class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm
+                         focus:outline-none focus:border-primary-500"
+                       placeholder="예: 15000" />
+              </div>
+              <div class="flex-1">
+                <label class="block text-xs font-semibold text-gray-500 mb-1">이동시간 (분)</label>
+                <input v-model="pc.travelMin" type="number" min="0"
+                       class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm
+                         focus:outline-none focus:border-primary-500"
+                       placeholder="예: 30" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 mb-1">분위기 태그</label>
+              <input v-model="pc.moodTags"
+                     class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm
+                       focus:outline-none focus:border-primary-500"
+                     placeholder="예: 조용한,가성비,분위기좋은 (쉼표 구분)" maxlength="200" />
+            </div>
           </div>
 
           <button
@@ -303,7 +339,11 @@ const submitting = ref(false)
 const errorMsg = ref('')
 
 interface TimeForm { date: string; startTime: string; endTime: string }
-interface PlaceForm { name: string; mapLink: string; memo: string }
+interface PlaceForm {
+  name: string; mapLink: string; memo: string
+  estCost: string; travelMin: string; moodTags: string
+  showDetail: boolean
+}
 
 const form = reactive({
   title: '',
@@ -312,7 +352,7 @@ const form = reactive({
   type: 'BOTH' as GatheringType,
   deadlineLocal: '',
   timeCandidates: [{ date: '', startTime: '', endTime: '' }] as TimeForm[],
-  placeCandidates: [{ name: '', mapLink: '', memo: '' }] as PlaceForm[]
+  placeCandidates: [{ name: '', mapLink: '', memo: '', estCost: '', travelMin: '', moodTags: '', showDetail: false }] as PlaceForm[]
 })
 
 // ========== 상수 ==========
@@ -370,7 +410,7 @@ function addTimeCandidate() {
 }
 
 function addPlaceCandidate() {
-  form.placeCandidates.push({ name: '', mapLink: '', memo: '' })
+  form.placeCandidates.push({ name: '', mapLink: '', memo: '', estCost: '', travelMin: '', moodTags: '', showDetail: false })
 }
 
 // ========== 제출 ==========
@@ -395,7 +435,10 @@ async function handleSubmit() {
         ? validPlaceCandidates.value.map(pc => ({
           name: pc.name.trim(),
           mapLink: pc.mapLink || null,
-          memo: pc.memo || null
+          memo: pc.memo || null,
+          estCost: pc.estCost ? Number(pc.estCost) : null,
+          travelMin: pc.travelMin ? Number(pc.travelMin) : null,
+          moodTags: pc.moodTags || null
         }))
         : null
 

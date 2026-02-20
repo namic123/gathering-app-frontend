@@ -112,6 +112,18 @@
               <div>
                 <p class="text-sm font-semibold">{{ pc.name }}</p>
                 <p v-if="pc.memo" class="text-xs text-gray-500">{{ pc.memo }}</p>
+                <div v-if="pc.estCost || pc.travelMin || (pc.moodTags && pc.moodTags.length)" class="flex flex-wrap gap-1 mt-1">
+                  <span v-if="pc.estCost" class="text-xs px-1.5 py-0.5 bg-gray-100 rounded text-gray-500">
+                    ~{{ pc.estCost.toLocaleString() }}원
+                  </span>
+                  <span v-if="pc.travelMin" class="text-xs px-1.5 py-0.5 bg-gray-100 rounded text-gray-500">
+                    이동 {{ pc.travelMin }}분
+                  </span>
+                  <span v-for="tag in pc.moodTags" :key="tag"
+                        class="text-xs px-1.5 py-0.5 bg-primary-50 text-primary-600 rounded">
+                    #{{ tag }}
+                  </span>
+                </div>
               </div>
               <span class="text-lg font-bold text-primary-500">
                 {{ getVoteCount(pc.id, 'place') }}
