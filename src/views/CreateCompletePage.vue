@@ -17,6 +17,18 @@
         </button>
       </div>
 
+      <!-- 카카오톡 공유 (최우선) -->
+      <button
+          v-if="kakao.isAvailable"
+          class="w-full py-3 bg-[#FEE500] text-[#191919] font-semibold rounded-xl
+               hover:bg-[#F5DC00] transition flex items-center justify-center gap-2"
+          @click="kakaoShare"
+      >
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#191919" d="M9 1C4.58 1 1 3.79 1 7.21c0 2.17 1.44 4.08 3.62 5.17l-.93 3.44c-.08.3.26.54.52.37l4.1-2.72c.22.02.45.03.69.03 4.42 0 8-2.79 8-6.29S13.42 1 9 1z"/></svg>
+        카카오톡으로 공유
+      </button>
+
+      <!-- 일반 공유 -->
       <button
           class="w-full py-3 bg-white border border-gray-200 rounded-xl font-semibold
                hover:bg-gray-50 transition"
@@ -35,8 +47,19 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useKakaoShare } from '@/composables/useKakaoShare'
 
 const props = defineProps<{ shareCode: string }>()
+
+const kakao = useKakaoShare()
+
+function kakaoShare() {
+  kakao.shareLink({
+    title: '모임 일정 투표',
+    description: '투표에 참여해주세요!',
+    url: shareUrl.value
+  })
+}
 
 const copied = ref(false)
 
