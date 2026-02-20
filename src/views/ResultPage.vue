@@ -62,26 +62,69 @@
         </div>
         <p class="text-lg font-semibold">{{ result.confirmedPlaceName }}</p>
 
-        v-if="result.confirmedPlaceMapLink"
-        :href="result.confirmedPlaceMapLink"
-        target="_blank"
-        class="inline-block mt-2 text-sm text-primary-500 hover:underline"
+        <a
+            v-if="result.confirmedPlaceMapLink"
+            :href="result.confirmedPlaceMapLink"
+            target="_blank"
+            class="inline-block mt-2 text-sm text-primary-500 hover:underline"
         >
-        지도에서 보기 ↗
+          지도에서 보기 ↗
         </a>
+      </div>
+
+      <!-- 참석자 목록 -->
+      <div v-if="result.participantNames && result.participantNames.length" class="bg-white rounded-2xl p-6 shadow-sm mb-4">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center text-lg">
+            👥
+          </span>
+          <h3 class="text-base font-bold">참석자 ({{ result.participantNames.length }}명)</h3>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <span
+              v-for="pName in result.participantNames"
+              :key="pName"
+              class="px-3 py-1.5 bg-gray-100 rounded-full text-sm font-medium text-gray-700"
+          >
+            {{ pName }}
+          </span>
+        </div>
       </div>
 
       <!-- 액션 버튼 -->
       <div class="space-y-3 mt-6">
-        <!-- .ics 캘린더 추가 -->
-
-        v-if="result.confirmedDate"
-        :href="icsDownloadUrl"
-        class="block w-full py-4 bg-primary-500 hover:bg-primary-600
-        text-white font-semibold text-center rounded-xl transition"
+        <!-- .ics 캘린더 추가 (아이폰/기본 캘린더) -->
+        <a
+            v-if="result.confirmedDate"
+            :href="icsDownloadUrl"
+            class="block w-full py-4 bg-primary-500 hover:bg-primary-600
+                 text-white font-semibold text-center rounded-xl transition"
         >
-        📅 캘린더에 추가하기
+          📅 캘린더에 추가하기 (.ics)
         </a>
+
+        <!-- 구글 캘린더 직접 추가 -->
+        <a
+            v-if="result.confirmedDate"
+            :href="googleCalendarUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block w-full py-4 bg-white border border-gray-200 font-semibold
+                 text-center rounded-xl hover:bg-gray-50 transition"
+        >
+          📆 구글 캘린더에 추가
+        </a>
+
+        <!-- 카카오톡 공유 -->
+        <button
+            v-if="kakao.isAvailable"
+            class="w-full py-4 bg-[#FEE500] text-[#191919] font-semibold
+                 text-center rounded-xl hover:bg-[#F5DC00] transition flex items-center justify-center gap-2"
+            @click="kakaoShareResult"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#191919" d="M9 1C4.58 1 1 3.79 1 7.21c0 2.17 1.44 4.08 3.62 5.17l-.93 3.44c-.08.3.26.54.52.37l4.1-2.72c.22.02.45.03.69.03 4.42 0 8-2.79 8-6.29S13.42 1 9 1z"/></svg>
+          카카오톡으로 공유
+        </button>
 
         <!-- 링크 공유 -->
         <button
@@ -115,9 +158,21 @@ import { ref, onMounted, computed } from 'vue'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import { getResult } from '@/api'
+import { useKakaoShare } from '@/composables/useKakaoShare'
 import type { ConfirmedResultResponse } from '@/types'
 
 dayjs.locale('ko')
+
+const kakao = useKakaoShare()
+
+function kakaoShareResult() {
+  const url = `${window.location.origin}/g/${props.shareCode}/result`
+  kakao.shareLink({
+    title: `${result.value?.title} - 일정 확정!`,
+    description: '모임 일정이 확정되었습니다. 확인해주세요!',
+    url
+  })
+}
 
 // ========== Props ==========
 
@@ -142,6 +197,31 @@ const shareButtonText = ref('🔗 결과 링크 공유하기')
 const icsDownloadUrl = computed(() =>
     `/api/v1/gatherings/${props.shareCode}/result/ics`
 )
+
+/**
+ * 구글 캘린더 직접 추가 URL.
+ * 클릭 시 구글 캘린더 이벤트 생성 페이지로 이동.
+ */
+const googleCalendarUrl = computed(() => {
+  const r = result.value
+  if (!r?.confirmedDate) return ''
+
+  const date = r.confirmedDate.replace(/-/g, '')
+  const start = r.confirmedStartTime?.replace(/:/g, '') || '0000'
+  const end = r.confirmedEndTime?.replace(/:/g, '') || start
+
+  const dates = `${date}T${start}00/${date}T${end}00`
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: r.title,
+    dates,
+    details: `주최: ${r.hostName}`,
+  })
+  if (r.confirmedPlaceName) {
+    params.set('location', r.confirmedPlaceName)
+  }
+  return `https://calendar.google.com/calendar/render?${params.toString()}`
+})
 
 // ========== 날짜 포맷 ==========
 

@@ -96,6 +96,7 @@ export interface ConfirmedResultResponse {
     confirmedEndTime: string | null
     confirmedPlaceName: string | null
     confirmedPlaceMapLink: string | null
+    participantNames: string[]
     confirmedBy: 'AUTO' | 'HOST'
     confirmedAt: string
     icsDownloadUrl: string
