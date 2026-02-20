@@ -143,13 +143,14 @@
                 <p class="text-sm font-semibold">{{ pc.name }}</p>
                 <p v-if="pc.memo" class="text-xs text-gray-500">{{ pc.memo }}</p>
 
-                v-if="pc.mapLink"
-                :href="pc.mapLink"
-                target="_blank"
-                class="text-xs text-primary-500 hover:underline"
-                @click.stop
+                <a
+                    v-if="pc.mapLink"
+                    :href="pc.mapLink"
+                    target="_blank"
+                    class="text-xs text-primary-500 hover:underline"
+                    @click.stop
                 >
-                지도 보기 ↗
+                  지도 보기 ↗
                 </a>
               </div>
 
@@ -196,7 +197,7 @@ import 'dayjs/locale/ko'
 import { getGathering, getVoteSummary, resolveTiebreak } from '@/api'
 import { useAdminToken } from '@/composables/useAdminToken'
 import GatheringInfoCard from '@/components/GatheringInfoCard.vue'
-import type { GatheringDetail, VoteSummaryResponse, TimeCandidateDetail, PlaceCandidateDetail } from '@/types'
+import type { GatheringDetail, VoteSummaryResponse } from '@/types'
 
 dayjs.locale('ko')
 
